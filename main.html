@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>✨ To-Do app ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{
+    font-family:'Inter','Poppins','Segoe UI',system-ui;
+    background:linear-gradient(135deg,#d94a7b 0%,#c23d6f 25%,#b83066 50%,#a8285a 75%,#9d2454 100%);
+    background-size:400% 400%;
+    animation:gradientShift 15s ease infinite;
+    min-height:100vh;
+    margin:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    transition:background .3s ease;
+  }
+  @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  body.dark-mode{
+    background:linear-gradient(135deg,#0f172a 0%,#1e293b 25%,#1a365d 50%,#0c4a6e 75%,#164e63 100%);
+    background-size:400% 400%;
+  }
+  .app{
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    padding:32px;
+    border-radius:32px;
+    box-shadow:0 8px 32px rgba(212,51,111,.12),0 32px 64px rgba(0,0,0,.08);
+    border:1px solid rgba(255,255,255,.8);
+    width:100%;
+    max-width:520px;
+    animation:slideUp .6s cubic-bezier(.34,.1,.64,1);
+  }
+  body.dark-mode .app{
+    background:rgba(30,41,59,.85);
+    border-color:rgba(148,163,184,.2);
+    box-shadow:0 8px 32px rgba(212,51,111,.08),0 32px 64px rgba(0,0,0,.3);
+  }
+  @keyframes slideUp{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  h1{
+    text-align:center;
+    margin:0 0 28px;
+    font-size:32px;
+    font-weight:700;
+    letter-spacing:-0.5px;
+    background:linear-gradient(135deg,#d4336f 0%,#c91f5c 50%,#b8164a 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation:fadeIn .8s ease;
+  }
+  body.dark-mode h1{
+    background:linear-gradient(135deg,#ff6b9d 0%,#ff4d85 50%,#ff3672 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .stat-box{
+    background:linear-gradient(135deg,rgba(217,52,123,.1),rgba(193,31,95,.1));
+    padding:16px;
+    border-radius:20px;
+    text-align:center;
+    font-size:13px;
+    color:#64748b;
+    border:1px solid rgba(217,52,123,.2);
+    transition:all .3s ease;
+    backdrop-filter:blur(5px);
+  }
+  .stat-box:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 16px rgba(217,52,123,.15);
+    background:linear-gradient(135deg,rgba(217,52,123,.15),rgba(193,31,95,.15));
+  }
+  body.dark-mode .stat-box{
+    background:rgba(30,41,59,.6);
+    color:#cbd5e1;
+    border-color:rgba(148,163,184,.2);
+  }
+  body.dark-mode .stat-box:hover{
+    background:rgba(51,65,85,.8);
+  }
+  .stat-number{font-size:22px;font-weight:700;background:linear-gradient(135deg,#d4336f,#c91f5c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:4px}
+  .row{display:flex;gap:10px;margin-bottom:16px}
+  .row input{
+    flex:1;
+    padding:14px 18px;
+    border-radius:16px;
+    border:2px solid rgba(226,232,240,.5);
+    outline:none;
+    font-size:14px;
+    font-weight:500;
+    background:rgba(248,250,252,.8);
+    transition:all .3s ease;
+    backdrop-filter:blur(5px);
+  }
+  body.dark-mode .row input{
+    border-color:rgba(71,85,105,.5);
+    background:rgba(30,41,59,.6);
+    color:#f1f5f9;
+  }
+  .row input:focus{
+    border-color:#d4336f;
+    box-shadow:0 0 0 4px rgba(212,51,111,.15),inset 0 0 0 1px rgba(212,51,111,.2);
+    background:rgba(248,250,252,.95);
+  }
+  .row button{
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(135deg,#d4336f 0%,#c91f5c 100%);
+    color:#fff;
+    padding:14px 24px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:16px;
+    transition:all .3s cubic-bezier(.34,.1,.64,1);
+    box-shadow:0 4px 12px rgba(212,51,111,.3);
+  }
+  .row button:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 24px rgba(212,51,111,.4);
+  }
+  .row button:active{transform:translateY(-2px)}
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .filters{
+    display:flex;
+    gap:8px;
+  }
+  .filters button{
+    border:none;
+    padding:10px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    background:rgba(226,232,240,.6);
+    color:#475569;
+    font-size:13px;
+    font-weight:600;
+    transition:all .3s ease;
+    backdrop-filter:blur(5px);
+    border:1px solid rgba(226,232,240,.8);
+  }
+  body.dark-mode .filters button{
+    background:rgba(51,65,85,.5);
+    color:#cbd5e1;
+    border-color:rgba(71,85,105,.4);
+  }
+  .filters button:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(212,51,111,.1)}
+  .filters button.active{
+    background:linear-gradient(135deg,#d4336f,#c91f5c);
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 8px 16px rgba(212,51,111,.3);
+  }
+  .topbar-actions{display:flex;gap:8px}
+  .topbar-actions button{
+    border:none;
+    padding:10px 12px;
+    border-radius:14px;
+    background:rgba(226,232,240,.6);
+    cursor:pointer;
+    font-size:16px;
+    transition:all .3s ease;
+    backdrop-filter:blur(5px);
+    border:1px solid rgba(226,232,240,.8);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  body.dark-mode .topbar-actions button{
+    background:rgba(51,65,85,.5);
+    border-color:rgba(71,85,105,.4);
+  }
+  .topbar-actions button:hover{transform:scale(1.12);background:linear-gradient(135deg,rgba(212,51,111,.2),rgba(193,31,95,.2));box-shadow:0 4px 12px rgba(212,51,111,.15)}
+  .counter{text-align:center;margin:12px 0;font-size:13px;color:#94a3b8;font-weight:500}
+  body.dark-mode .counter{color:#cbd5e1}
+  ul{list-style:none;padding:0;margin:0;max-height:520px;overflow-y:auto}
+  ul::-webkit-scrollbar{width:6px}
+  ul::-webkit-scrollbar-track{background:transparent}
+  ul::-webkit-scrollbar-thumb{background:rgba(212,51,111,.3);border-radius:10px;transition:background .2s}
+  ul::-webkit-scrollbar-thumb:hover{background:rgba(212,51,111,.5)}
+  body.dark-mode ul::-webkit-scrollbar-thumb{background:rgba(148,163,184,.3)}
+  li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(135deg,rgba(248,250,252,.8),rgba(243,244,246,.6));
+    padding:14px 16px;
+    border-radius:16px;
+    margin-bottom:10px;
+    font-size:14px;
+    font-weight:500;
+    transition:all .3s ease;
+    border-left:5px solid #d4336f;
+    backdrop-filter:blur(5px);
+    border:1px solid rgba(226,232,240,.5);
+  }
+  body.dark-mode li{
+    background:linear-gradient(135deg,rgba(30,41,59,.7),rgba(51,65,85,.5));
+    border-left-color:#ff6b9d;
+    border-color:rgba(71,85,105,.4);
+  }
+  li:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 16px rgba(212,51,111,.15);
+    background:linear-gradient(135deg,rgba(248,250,252,.95),rgba(243,244,246,.8));
+  }
+  body.dark-mode li:hover{background:linear-gradient(135deg,rgba(30,41,59,.9),rgba(51,65,85,.7))}
+  li.done{opacity:.5;color:#94a3b8}
+  li.done span{text-decoration:line-through;color:#cbd5e1}
+  body.dark-mode li.done span{color:#64748b}
+  li.priority-high{border-left-color:#ef4444}
+  li.priority-medium{border-left-color:#f59e0b}
+  li.priority-low{border-left-color:#10b981}
+  li.dragging{opacity:.3;transform:scale(.98)}
+  .task-content{flex:1;display:flex;align-items:center;gap:10px;margin-right:8px}
+  .priority-badge{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+  }
+  .priority-badge.high{background:#ef4444}
+  .priority-badge.medium{background:#f59e0b}
+  .priority-badge.low{background:#10b981}
+  .actions{display:flex;gap:6px}
+  .actions button{
+    border:none;
+    padding:8px 10px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:13px;
+    transition:all .3s ease;
+    border:1px solid rgba(226,232,240,.5);
+  }
+  .actions button:hover{transform:scale(1.15);box-shadow:0 4px 8px rgba(0,0,0,.1)}
+  .done-btn{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(5,150,105,.1));color:#059669;border-color:rgba(16,185,129,.3)}
+  .delete-btn{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(220,38,38,.1));color:#dc2626;border-color:rgba(239,68,68,.3)}
+  .remind-btn{background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(217,119,6,.1));color:#b45309;border-color:rgba(245,158,11,.3)}
+  .priority-btn{background:linear-gradient(135deg,rgba(212,51,111,.2),rgba(201,31,92,.1));color:#d4336f;border-color:rgba(212,51,111,.3)}
+  body.dark-mode .done-btn{background:rgba(5,150,105,.2);color:#6ee7b7;border-color:rgba(5,150,105,.4)}
+  body.dark-mode .delete-btn{background:rgba(220,38,38,.2);color:#f87171;border-color:rgba(220,38,38,.4)}
+  body.dark-mode .remind-btn{background:rgba(217,119,6,.2);color:#fcd34d;border-color:rgba(217,119,6,.4)}
+  body.dark-mode .priority-btn{background:rgba(212,51,111,.2);color:#ff6b9d;border-color:rgba(212,51,111,.4)}
+  input.edit{
+    flex:1;
+    border:2px solid #d4336f;
+    outline:none;
+    font-size:14px;
+    background:#fff;
+    border-radius:12px;
+    padding:8px 12px;
+    font-weight:500;
+    transition:all .2s;
+  }
+  body.dark-mode input.edit{background:#374151;color:#f1f5f9;border-color:#ff6b9d}
+  input.edit:focus{box-shadow:0 0 0 4px rgba(212,51,111,.2)}
+  canvas#confetti{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+  }
+  .help-icon{
+    cursor:pointer;
+    font-size:18px;
+    opacity:.5;
+    transition:all .3s ease;
+    width:32px;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:rgba(226,232,240,.5);
+  }
+  body.dark-mode .help-icon{background:rgba(51,65,85,.5)}
+  .help-icon:hover{opacity:1;transform:scale(1.1);background:linear-gradient(135deg,rgba(212,51,111,.3),rgba(193,31,95,.2))}
+  .modal{
+    display:none;
+    position:fixed;
+    z-index:1000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.4);
+    animation:fadeIn .2s;
+    backdrop-filter:blur(4px);
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal.show{display:flex;align-items:center;justify-content:center}
+  .modal-content{
+    background:#fff;
+    padding:28px;
+    border-radius:24px;
+    max-width:340px;
+    box-shadow:0 25px 50px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.5);
+    animation:slideUpModal .4s cubic-bezier(.34,.1,.64,1);
+  }
+  @keyframes slideUpModal{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  body.dark-mode .modal-content{
+    background:rgba(30,41,59,.95);
+    color:#f1f5f9;
+    box-shadow:0 25px 50px rgba(0,0,0,.5);
+  }
+  .modal-content h2{
+    margin:0 0 16px;
+    color:#d4336f;
+    font-size:20px;
+    font-weight:600;
+  }
+  body.dark-mode .modal-content h2{color:#ff6b9d}
+  .modal-content p{margin:10px 0;font-size:13px;line-height:1.7;color:#64748b}
+  body.dark-mode .modal-content p{color:#cbd5e1}
+  .modal-content button{
+    width:100%;
+    margin-top:16px;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg,#d4336f,#c91f5c);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    transition:all .3s ease;
+    box-shadow:0 4px 12px rgba(212,51,111,.3);
+  }
+  .modal-content button:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(212,51,111,.4)}
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:#cbd5e1;
+  }
+  body.dark-mode .empty-state{color:#94a3b8}
+  .empty-state-emoji{font-size:56px;margin-bottom:16px;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%{transform:translateY(0px)}50%{transform:translateY(-10px)}100%{transform:translateY(0px)}}
+</style>
+</head>
+<body>
+
+<div id="helpModal" class="modal">
+  <div class="modal-content">
+    <h2>⌨️ Keyboard Shortcuts</h2>
+    <p><strong>Ctrl+K:</strong> Focus input</p>
+    <p><strong>Ctrl+D:</strong> Toggle last task</p>
+    <p><strong>Double Click:</strong> Edit task</p>
+    <p><strong>Ctrl+M:</strong> Toggle dark mode</p>
+    <button onclick="closeHelp()">Got it! 👍</button>
+  </div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<div class="app">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h1>✨ TO-DO APP ✨</h1>
+    <span class="help-icon" onclick="showHelp()">❓</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div>📋 Total</div>
+      <div class="stat-number" id="stat-total">0</div>
+    </div>
+    <div class="stat-box">
+      <div>✅ Completed</div>
+      <div class="stat-number" id="stat-completed">0</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <input id="taskInput" placeholder="Add a new task...">
+    <button onclick="addTask()">➕</button>
+  </div>
+
+  <div class="topbar">
+    <div class="filters">
+      <button onclick="setFilter('all')" id="f-all">All</button>
+      <button onclick="setFilter('active')" id="f-active">Active</button>
+      <button onclick="setFilter('done')" id="f-done">Done</button>
+    </div>
+
+    <div class="topbar-actions">
+      <button onclick="exportData()" title="Export">💾</button>
+      <button onclick="importData()" title="Import">📥</button>
+      <button onclick="toggleDarkMode()" title="Dark Mode">🌙</button>
+      <button onclick="clearCompleted()" title="Clear Completed">🧹</button>
+    </div>
+  </div>
+
+  <div class="counter" id="counter"></div>
+
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div class="empty-state-emoji">🎉</div>
+    <div>No tasks here! You're all done!</div>
+  </div>
+
+  <ul id="taskList"></ul>
+</div>
+
+<script>
+  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  let filter = "all";
+  let reminderTimers = {};
+  let darkMode = localStorage.getItem("darkMode") === "true";
+
+  if(darkMode) document.body.classList.add("dark-mode");
+
+  if("Notification" in window){
+    Notification.requestPermission();
+  }
+
+  function save(){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
+
+  function toggleDarkMode(){
+    darkMode = !darkMode;
+    localStorage.setItem("darkMode", darkMode);
+    document.body.classList.toggle("dark-mode");
+  }
+
+  function showHelp(){
+    document.getElementById("helpModal").classList.add("show");
+  }
+
+  function closeHelp(){
+    document.getElementById("helpModal").classList.remove("show");
+  }
+
+  function setFilter(f){
+    filter = f;
+    document.querySelectorAll(".filters button")
+      .forEach(b=>b.classList.remove("active"));
+    document.getElementById("f-"+f).classList.add("active");
+    render();
+  }
+
+  function render(){
+    const list = document.getElementById("taskList");
+    const counter = document.getElementById("counter");
+    const emptyState = document.getElementById("emptyState");
+    list.innerHTML = "";
+
+    const filtered = tasks.filter(t =>
+      filter==="all" ? true :
+      filter==="active" ? !t.done :
+      t.done
+    );
+
+    if(filtered.length===0){
+      emptyState.style.display="block";
+      list.style.display="none";
+      counter.textContent = "";
+      updateStats();
+      return;
+    }
+    emptyState.style.display="none";
+    list.style.display="block";
+
+    filtered.forEach((task)=>{
+      const i = tasks.indexOf(task);
+      const li = document.createElement("li");
+      li.draggable = true;
+      li.className = `priority-${task.priority || 'medium'}`;
+
+      if(task.done) li.classList.add("done");
+
+      li.addEventListener("dragstart", e=>{
+        li.classList.add("dragging");
+        e.dataTransfer.setData("text/plain", i);
+      });
+
+      li.addEventListener("dragend", ()=>{
+        li.classList.remove("dragging");
+      });
+
+      li.addEventListener("dragover", e=>e.preventDefault());
+
+      li.addEventListener("drop", e=>{
+        e.preventDefault();
+        const from = parseInt(e.dataTransfer.getData("text/plain"));
+        const to = i;
+        moveTask(from,to);
+      });
+
+      const taskContent = document.createElement("div");
+      taskContent.className = "task-content";
+
+      const span = document.createElement("span");
+      span.textContent = task.text;
+      span.ondblclick = ()=>editTask(i, li, span);
+
+      taskContent.appendChild(span);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const doneBtn = document.createElement("button");
+      doneBtn.textContent = task.done ? "↩️" : "✓";
+      doneBtn.className = "done-btn";
+      doneBtn.title = "Toggle done";
+      doneBtn.onclick = ()=>toggleDone(i);
+
+      const priorityBtn = document.createElement("button");
+      const priorities = ["low", "medium", "high"];
+      const currentIndex = priorities.indexOf(task.priority || "medium");
+      const priorityEmojis = ["🟢", "🟡", "🔴"];
+      priorityBtn.textContent = priorityEmojis[currentIndex];
+      priorityBtn.className = "priority-btn";
+      priorityBtn.title = "Change priority";
+      priorityBtn.onclick = ()=>changePriority(i);
+
+      const remindBtn = document.createElement("button");
+      remindBtn.textContent = "⏰";
+      remindBtn.className = "remind-btn";
+      remindBtn.title = "Set reminder";
+      remindBtn.onclick = ()=>setReminder(i);
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "🗑";
+      delBtn.className = "delete-btn";
+      delBtn.title = "Delete";
+      delBtn.onclick = ()=>deleteTask(i);
+
+      actions.appendChild(doneBtn);
+      actions.appendChild(priorityBtn);
+      actions.appendChild(remindBtn);
+      actions.appendChild(delBtn);
+
+      li.appendChild(taskContent);
+      li.appendChild(actions);
+      list.appendChild(li);
+    });
+
+    const active = tasks.filter(t=>!t.done).length;
+    counter.textContent = active + " task" + (active!==1?"s":"") + " remaining";
+    updateStats();
+  }
+
+  function updateStats(){
+    const total = tasks.length;
+    const completed = tasks.filter(t=>t.done).length;
+    document.getElementById("stat-total").textContent = total;
+    document.getElementById("stat-completed").textContent = completed;
+  }
+
+  function changePriority(i){
+    const priorities = ["low", "medium", "high"];
+    const currentIndex = priorities.indexOf(tasks[i].priority || "medium");
+    const nextIndex = (currentIndex + 1) % priorities.length;
+    tasks[i].priority = priorities[nextIndex];
+    save();
+    render();
+  }
+
+  function addTask(){
+    const input = document.getElementById("taskInput");
+    const text = input.value.trim();
+    if(!text) return;
+    tasks.push({text, done:false, remindAt:null, priority:"medium"});
+    save();
+    render();
+    input.value = "";
+  }
+
+  function toggleDone(i){
+    tasks[i].done = !tasks[i].done;
+    save();
+    render();
+    if(tasks.every(t=>t.done) && tasks.length > 0){
+      launchConfetti();
+    }
+  }
+
+  function deleteTask(i){
+    tasks.splice(i,1);
+    save();
+    render();
+  }
+
+  function clearCompleted(){
+    tasks = tasks.filter(t=>!t.done);
+    save();
+    render();
+  }
+
+  function moveTask(from,to){
+    const t = tasks.splice(from,1)[0];
+    tasks.splice(to,0,t);
+    save();
+    render();
+  }
+
+  function editTask(i, li, span){
+    const input = document.createElement("input");
+    input.className = "edit";
+    input.value = tasks[i].text;
+    const taskContent = li.querySelector(".task-content");
+    taskContent.replaceChild(input, span);
+    input.focus();
+
+    input.onblur = commit;
+    input.onkeydown = e=>{
+      if(e.key==="Enter") commit();
+      if(e.key==="Escape") render();
+    };
+
+    function commit(){
+      const text = input.value.trim();
+      if(text) tasks[i].text = text;
+      save();
+      render();
+    }
+  }
+
+  function setReminder(i){
+    const mins = prompt("⏰ Remind me in how many minutes?");
+    const m = parseFloat(mins);
+    if(isNaN(m) || m<=0) return;
+
+    const when = Date.now() + m*60000;
+    tasks[i].remindAt = when;
+    save();
+    scheduleReminder(i);
+    render();
+  }
+
+  function scheduleReminder(i){
+    if(reminderTimers[i]) clearTimeout(reminderTimers[i]);
+    const task = tasks[i];
+    if(!task || !task.remindAt) return;
+    const delay = task.remindAt - Date.now();
+    if(delay<=0) return fireReminder(i);
+
+    reminderTimers[i] = setTimeout(()=>fireReminder(i), delay);
+  }
+
+  function fireReminder(i){
+    const task = tasks[i];
+    if(!task) return;
+    if("Notification" in window && Notification.permission==="granted"){
+      new Notification("⏰ Reminder", { body: task.text });
+    } else {
+      alert("⏰ Reminder: " + task.text);
+    }
+    task.remindAt = null;
+    save();
+    render();
+  }
+
+  tasks.forEach((_,i)=>scheduleReminder(i));
+
+  document.getElementById("taskInput").addEventListener("keydown", e=>{
+    if(e.key==="Enter") addTask();
+    if(e.key==="Escape") e.target.blur();
+  });
+
+  document.addEventListener("keydown", e=>{
+    if(e.ctrlKey && e.key==="k"){
+      document.getElementById("taskInput").focus();
+      e.preventDefault();
+    }
+    if(e.ctrlKey && e.key==="d"){
+      const last = tasks.length-1;
+      if(last>=0) toggleDone(last);
+    }
+    if(e.ctrlKey && e.key==="m"){
+      toggleDarkMode();
+      e.preventDefault();
+    }
+  });
+
+  document.addEventListener("click", e=>{
+    if(!e.target.closest(".modal-content") && e.target.closest("#helpModal")){
+      closeHelp();
+    }
+  });
+
+  function exportData(){
+    const data = JSON.stringify(tasks, null, 2);
+    navigator.clipboard.writeText(data).then(()=>{
+      alert("✅ Copied your tasks! Paste them somewhere safe.");
+    });
+  }
+
+  function importData(){
+    const data = prompt("📋 Paste your exported tasks JSON here:");
+    if(!data) return;
+    try{
+      const parsed = JSON.parse(data);
+      if(!Array.isArray(parsed)) throw new Error("Invalid format");
+      tasks = parsed;
+      save();
+      render();
+      alert("✅ Imported successfully!");
+    }catch(e){
+      alert("❌ Invalid data format.");
+    }
+  }
+
+  function launchConfetti(){
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+
+    const pieces = [];
+    const emojis = ["✨", "🎉", "⭐", "🌟", "💫"];
+    
+    for(let i=0;i<150;i++){
+      pieces.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height-canvas.height,
+        r:6+Math.random()*6,
+        d:Math.random()*0.05+0.02,
+        color:`hsl(${Math.random()*360},100%,70%)`,
+        emoji:emojis[Math.floor(Math.random()*emojis.length)],
+        spin:Math.random()*0.1,
+        rotation:Math.random()*Math.PI*2
+      });
+    }
+
+    let t=0;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{
+        ctx.save();
+        ctx.translate(p.x,p.y);
+        ctx.rotate(p.rotation);
+        ctx.font="24px Arial";
+        ctx.fillText(p.emoji,0,0);
+        ctx.restore();
+      });
+      update();
+      if(t<400) requestAnimationFrame(draw);
+      t++;
+    }
+
+    function update(){
+      pieces.forEach(p=>{
+        p.y += Math.cos(t*p.d)+2;
+        p.x += Math.sin(t*p.d);
+        p.rotation += p.spin;
+      });
+    }
+    draw();
+  }
+
+  setFilter("all");
+  render();
+</script>
+
+</body>
+</html>
